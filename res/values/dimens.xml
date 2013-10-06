@@ -52,7 +52,7 @@
     <dimen name="appwidget_min_width">260dip</dimen>
     <dimen name="appwidget_min_height">40dip</dimen>
 
-    <dimen name="pager_tabs_padding">0dp</dimen>
+    <dimen name="pager_tabs_padding">20dp</dimen>
 
     <!-- Size of AppWidget previews in KeyguardAppWidgetPickActivity -->
     <dimen name="appwidget_preview_width">140dip</dimen>

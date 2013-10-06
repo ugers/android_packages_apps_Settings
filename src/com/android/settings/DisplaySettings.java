@@ -30,6 +30,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.hardware.display.DisplayManager;
+import android.hardware.display.WifiDisplay;
 import android.hardware.display.WifiDisplayStatus;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,13 +42,19 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.Log;
 
 import com.android.internal.view.RotationPolicy;
 import com.android.settings.cyanogenmod.DisplayRotation;
 import com.android.settings.Utils;
+import com.android.settings.DreamSettings;
+import android.os.PowerManager;
 
 import java.util.ArrayList;
+
+import android.view.IWindowManager;
+import android.view.WindowManager;
 
 public class DisplaySettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener, OnPreferenceClickListener {
@@ -59,13 +66,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private static final String KEY_SCREEN_TIMEOUT = "screen_timeout";
     private static final String KEY_FONT_SIZE = "font_size";
     private static final String KEY_SCREEN_SAVER = "screensaver";
-    private static final String KEY_WIFI_DISPLAY = "wifi_display";
+    private static final String KEY_ACCELEROMETER_COORDINATE = "accelerometer_coornadite";
+    private static final String KEY_SMART_BRIGHTNESS = "smart_brightness";
+    private static final String KEY_SMART_BRIGHTNESS_PREVIEW = "key_smart_brightness_preview";
     private static final String KEY_DISPLAY_ROTATION = "display_rotation";
     private static final String KEY_LOCKSCREEN_ROTATION = "lockscreen_rotation";
     private static final String KEY_WAKEUP_CATEGORY = "category_wakeup_options";
     private static final String KEY_HOME_WAKE = "pref_home_wake";
     private static final String KEY_VOLUME_WAKE = "pref_volume_wake";
     private static final String KEY_SCREEN_OFF_ANIMATION = "screen_off_animation";
+    private static final String KEY_WIFI_DISPLAY = "wifi_display";
+    private static final String KEY_SCREEN_ADAPTION = "screen_adaption";
 
     // Strings used for building the summary
     private static final String ROTATION_ANGLE_0 = "0";
@@ -87,8 +98,15 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private ListPreference mScreenTimeoutPreference;
     private Preference mScreenSaverPreference;
 
+    private ListPreference mAccelerometerCoordinate;
+
+    private CheckBoxPreference mSmartBrightness;
+    private CheckBoxPreference mSmartBrightnessPreview;
+
     private WifiDisplayStatus mWifiDisplayStatus;
     private Preference mWifiDisplayPreference;
+
+    private Preference mScreenAdaption;
 
     private CheckBoxPreference mScreenOffAnimation;
 
@@ -145,6 +163,55 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         mFontSizePref = (WarnedListPreference) findPreference(KEY_FONT_SIZE);
         mFontSizePref.setOnPreferenceChangeListener(this);
         mFontSizePref.setOnPreferenceClickListener(this);
+
+        mScreenAdaption = (Preference)findPreference(KEY_SCREEN_ADAPTION);
+        WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        android.view.Display display = wm.getDefaultDisplay();
+        int width     = display.getWidth();
+        int height    = display.getHeight();
+        Log.d(TAG,"rate1 = " + (width * 3.0f / (height * 5.0f)) +
+	    " rate2 = " + (width * 5.0f / (height * 3.0f)));
+        if(((width * 3.0f / (height * 5.0f) == 1.0f) ||
+	    (width * 5.0f / (height * 3.0f) == 1.0f)) && mScreenAdaption!=null)
+        {            
+	    getPreferenceScreen().removePreference(mScreenAdaption) ;
+        }
+
+        mAccelerometerCoordinate = (ListPreference) findPreference(KEY_ACCELEROMETER_COORDINATE);
+        if(mAccelerometerCoordinate != null)
+        {            
+            mAccelerometerCoordinate.setOnPreferenceChangeListener(this);
+            String value = Settings.System.getString(getContentResolver(),
+            	Settings.System.ACCELEROMETER_COORDINATE);
+            if ( value == null )
+            {
+            	value = "default";
+            }
+			
+            mAccelerometerCoordinate.setValue(value);
+            updateAccelerometerCoordinateSummary(value);
+        }
+
+        mSmartBrightnessPreview = new CheckBoxPreference(this.getActivity());
+        mSmartBrightnessPreview.setTitle(R.string.smart_brightness_preview);
+        mSmartBrightnessPreview.setKey(KEY_SMART_BRIGHTNESS_PREVIEW);
+        mSmartBrightness = (CheckBoxPreference)findPreference(KEY_SMART_BRIGHTNESS);
+        mSmartBrightness.setOnPreferenceChangeListener(this);
+        if(!getResources().getBoolean(R.bool.has_smart_brightness))
+        {            
+ 	    getPreferenceScreen().removePreference(mSmartBrightness);
+        }
+        else
+        {            
+ 	    boolean enable = Settings.System.getInt(getContentResolver(),
+		Settings.System.SMART_BRIGHTNESS_ENABLE,0) != 0 ? true : false;
+ 	    mSmartBrightness.setChecked(enable);
+ 	    mSmartBrightnessPreview.setOnPreferenceChangeListener(this);
+ 	    if(enable)
+ 	    {                
+		getPreferenceScreen().addPreference(mSmartBrightnessPreview);
+ 	    }       
+        }
 
         mDisplayManager = (DisplayManager)getActivity().getSystemService(
                 Context.DISPLAY_SERVICE);
@@ -391,6 +458,10 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         readFontSizePreference(mFontSizePref);
         updateScreenSaverSummary();
         updateWifiDisplaySummary();
+        if(mAccelerometerCoordinate != null)
+        {            
+            updateAccelerometerCoordinateSummary(mAccelerometerCoordinate.getValue());
+        }
     }
 
     private void updateScreenSaverSummary() {
@@ -415,6 +486,20 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
                     break;
             }
         }
+    }
+
+    private void updateAccelerometerCoordinateSummary(Object value)
+	{               
+        CharSequence[] summaries = getResources().getTextArray(R.array.accelerometer_summaries);
+        CharSequence[] values = mAccelerometerCoordinate.getEntryValues();
+        for (int i=0; i<values.length; i++) 
+        {            
+	     if (values[i].equals(value)) 
+	     {                
+		 mAccelerometerCoordinate.setSummary(summaries[i]);                
+		 break;            
+	     }        
+        }    
     }
 
     public void writeFontSizePreference(Object objValue) {
@@ -458,6 +543,40 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
         if (KEY_FONT_SIZE.equals(key)) {
             writeFontSizePreference(objValue);
+        }
+
+        if (KEY_ACCELEROMETER_COORDINATE.equals(key))
+        {            
+	    String value = String.valueOf(objValue);
+	    try 
+	    { 
+		Settings.System.putString(getContentResolver(),
+		    Settings.System.ACCELEROMETER_COORDINATE, value);
+				
+		updateAccelerometerCoordinateSummary(objValue);
+	    }
+	    catch (NumberFormatException e) 
+	    {                
+		Log.e(TAG, "could not persist key accelerometer coordinate setting", e); 
+	    }        
+        }
+
+        if (KEY_SMART_BRIGHTNESS.equals(key))
+        {            
+	    int value = (Boolean)objValue == true ? 1 : 0;
+	    Settings.System.putInt(getContentResolver(),
+		Settings.System.SMART_BRIGHTNESS_ENABLE, value);
+	    PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+//	    pm.setWiseBacklightMode(value);
+	    if((Boolean)objValue)
+	    {                
+		getPreferenceScreen().addPreference(mSmartBrightnessPreview);
+	    }
+	    else
+	    {            	
+		getPreferenceScreen().removePreference(mSmartBrightnessPreview);
+		mSmartBrightnessPreview.setChecked(false);            
+	    }        
         }
 
         return true;

@@ -55,9 +55,9 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
     private final int mScreenBrightnessMaximum;
 
     private SeekBar mSeekBar;
-    private CheckBox mCheckBox;
-    private TextView mAutoSensitivityTitle;
-    private Spinner mAutoSensitivity;
+    //private CheckBox mCheckBox;
+    //private TextView mAutoSensitivityTitle;
+    //private Spinner mAutoSensitivity;
 
     private int mOldBrightness;
     private int mOldAutomatic;
@@ -117,7 +117,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
     @Override
     protected void showDialog(Bundle state) {
         super.showDialog(state);
-
+/*
         if (mAutomaticAvailable) {
             // can't use onPrepareDialogBuilder for this as we want the dialog
             // to be kept open on click
@@ -132,7 +132,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         }
 
         updateAutoBrightnessCustomizeButton();
-
+*/
         getContext().getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), true,
                 mBrightnessObserver);
@@ -152,6 +152,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         mOldBrightness = getBrightness();
         mSeekBar.setProgress(mOldBrightness);
 
+        /*
         mCheckBox = (CheckBox)view.findViewById(R.id.automatic_mode);
         mAutoSensitivityTitle = (TextView) view.findViewById(R.id.automatic_sensitivity_title);
         mAutoSensitivity = (Spinner) view.findViewById(R.id.automatic_sensitivity);
@@ -185,10 +186,11 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
             }
         } else {
             mCheckBox.setEnabled(false);
+        */
             mSeekBar.setEnabled(true);
-            mAutoSensitivityTitle.setVisibility(View.GONE);
-            mAutoSensitivity.setVisibility(View.GONE);
-        }
+            //mAutoSensitivityTitle.setVisibility(View.GONE);
+            //mAutoSensitivity.setVisibility(View.GONE);
+        //}
         mSeekBar.setOnSeekBarChangeListener(this);
     }
 
@@ -210,12 +212,13 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
                 : Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
         mSeekBar.setProgress(getBrightness());
         mSeekBar.setEnabled(!mAutomaticMode || USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT);
-        mAutoSensitivityTitle.setEnabled(mAutomaticMode);
-        mAutoSensitivity.setEnabled(mAutomaticMode);
+        //mAutoSensitivityTitle.setEnabled(mAutomaticMode);
+        //mAutoSensitivity.setEnabled(mAutomaticMode);
         setBrightness(mSeekBar.getProgress(), false);
-        updateAutoBrightnessCustomizeButton();
+        //updateAutoBrightnessCustomizeButton();
     }
 
+    /*
     private void updateAutoBrightnessCustomizeButton() {
         AlertDialog d = (AlertDialog) getDialog();
         if (d != null && mAutomaticAvailable) {
@@ -223,6 +226,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
                     mCheckBox.isChecked());
         }
     }
+    */
 
     private int getBrightness() {
         int mode = getBrightnessMode(0);
@@ -262,7 +266,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
     private void onBrightnessModeChanged() {
         boolean checked = getBrightnessMode(0)
                 == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-        mCheckBox.setChecked(checked);
+        //mCheckBox.setChecked(checked);
         mSeekBar.setProgress(getBrightness());
         mSeekBar.setEnabled(!checked || USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT);
     }
@@ -275,7 +279,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
 
         if (positiveResult) {
             setBrightness(mSeekBar.getProgress(), true);
-
+/*
             int selection = mAutoSensitivity.getSelectedItemPosition();
             if (selection >= 0) {
                 int[] sensitivityValues = getContext().getResources().getIntArray(
@@ -285,6 +289,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
                 Settings.System.putFloat(resolver,
                         Settings.System.AUTO_BRIGHTNESS_RESPONSIVENESS, sensitivity);
             }
+*/
         } else {
             restoreOldState();
         }
@@ -377,17 +382,18 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
 
         // Save the dialog state
         final SavedState myState = new SavedState(superState);
-        myState.automatic = mCheckBox.isChecked();
+        //myState.automatic = mCheckBox.isChecked();
         myState.progress = mSeekBar.getProgress();
         myState.oldAutomatic = mOldAutomatic == 1;
         myState.oldProgress = mOldBrightness;
         myState.curBrightness = mCurBrightness;
+/*
         myState.autoSensitivitySelection = mAutoSensitivity.getSelectedItemPosition();
         myState.customizeDialogShown = mCustomizeDialog != null && mCustomizeDialog.isShowing();
         if (myState.customizeDialogShown) {
             myState.customizeDialogState = mCustomizeDialog.onSaveInstanceState();
         }
-
+*/
         // Restore the old state when the activity or dialog is being paused
         restoreOldState();
         return myState;
@@ -408,11 +414,13 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         setMode(myState.automatic ? 1 : 0);
         setBrightness(myState.progress, false);
         mCurBrightness = myState.curBrightness;
+/*
         mAutoSensitivity.setSelection(myState.autoSensitivitySelection);
 
         if (myState.customizeDialogShown) {
             showCustomizeDialog(myState.customizeDialogState);
         }
+*/
     }
 
     private static class SavedState extends BaseSavedState {

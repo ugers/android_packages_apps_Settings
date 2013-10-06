@@ -78,7 +78,7 @@ public class SystemSettings extends SettingsPreferenceFragment  implements
         PreferenceCategory navbarCategory =
                 (PreferenceCategory) findPreference(KEY_NAVIGATION_BAR_CATEGORY);
 
-        IWindowManager windowManager = IWindowManager.Stub.asInterface(
+        /*IWindowManager windowManager = IWindowManager.Stub.asInterface(
                 ServiceManager.getService(Context.WINDOW_SERVICE));
         try {
             if (windowManager.hasNavigationBar()) {
@@ -88,7 +88,7 @@ public class SystemSettings extends SettingsPreferenceFragment  implements
             }
         } catch (RemoteException e) {
             // Do nothing
-        }
+        }*/
 
         if (removeKeys) {
             prefScreen.removePreference(findPreference(KEY_HARDWARE_KEYS));

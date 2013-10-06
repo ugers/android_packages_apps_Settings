@@ -58,6 +58,11 @@ public class MasterClearConfirm extends Fragment {
                 return;
             }
 
+
+            Intent alarmintent = new Intent();
+            alarmintent.setAction("android.need.alarm.reset");
+            getActivity().sendBroadcast(alarmintent);
+
             if (mEraseSdCard) {
                 Intent intent = new Intent(ExternalStorageFormatter.FORMAT_AND_FACTORY_RESET);
                 intent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);

@@ -1168,17 +1168,32 @@ public class DataUsageSummary extends Fragment {
 
             getLoaderManager().destroyLoader(LOADER_SUMMARY);
 
-        } else {
-            if (mChartData != null) {
-                entry = mChartData.network.getValues(start, end, now, null);
-            }
+            final long totalBytes = entry != null ? entry.rxBytes + entry.txBytes : 0;
+		
+            updateUsageSummary( totalBytes );
+
+        }
+        else
+        {      
+            //І»НЁ№эНшВ·НјµГµЅЧЬµДЦµ
+//            if (mChartData != null) {
+//                entry = mChartData.network.getValues(start, end, now, null);
+//            }
 
             // kick off loader for detailed stats
             getLoaderManager().restartLoader(LOADER_SUMMARY,
                     SummaryForAllUidLoader.buildArgs(mTemplate, start, end), mSummaryCallbacks);
         }
 
-        final long totalBytes = entry != null ? entry.rxBytes + entry.txBytes : 0;
+        ensureLayoutTransitions();
+    }
+
+    private void updateUsageSummary( long totalBytes  )
+    {
+        final long start = mChart.getInspectStart();
+        final long end = mChart.getInspectEnd();
+        final Context context = getActivity();
+
         final String totalPhrase = Formatter.formatFileSize(context, totalBytes);
         final String rangePhrase = formatDateRange(context, start, end);
 
@@ -1193,7 +1208,7 @@ public class DataUsageSummary extends Fragment {
         mUsageSummary.setText(getString(summaryRes, totalPhrase, rangePhrase));
 
         // initial layout is finished above, ensure we have transitions
-        ensureLayoutTransitions();
+        //ensureLayoutTransitions();
     }
 
     private final LoaderCallbacks<ChartData> mChartDataCallbacks = new LoaderCallbacks<
@@ -1239,6 +1254,19 @@ public class DataUsageSummary extends Fragment {
             final int[] restrictedUids = mPolicyManager.getUidsWithPolicy(
                     POLICY_REJECT_METERED_BACKGROUND);
             mAdapter.bindStats(data, restrictedUids);
+            NetworkStats.Entry entry = null;
+            final int size = data != null ? data.size() : 0;
+
+
+            //count the total usage
+            long all_total = 0;
+            for (int i = 0; i < size; i++) 
+            {
+                entry = data.getValues(i, entry);
+                all_total += entry.rxBytes + entry.txBytes;
+            }
+
+            updateUsageSummary( all_total );
             updateEmptyVisible();
         }
 
