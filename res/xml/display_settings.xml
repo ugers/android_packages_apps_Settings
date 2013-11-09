@@ -54,6 +54,10 @@
                 android:entryValues="@array/entryvalues_font_size"
                 android:dialogTitle="@string/dialog_title_font_size" />
 
+        <CheckBoxPreference
+            android:key="notification_pulse"
+            android:title="@string/notification_pulse_title"
+            android:persistent="false" />
         <ListPreference
             android:key="accelerometer_coornadite"
             android:title="@string/accelerometer_coordinate_title"
