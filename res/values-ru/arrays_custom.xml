@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="hdmi_mode_entries">
+        <item >Авто</item>
+        <item >HDMI 480P</item>
+        <item >HDMI 576P</item>
+        <item >HDMI 720P 50HZ</item>
+        <item >HDMI 720P 60HZ</item>
+        <item >HDMI 1080P 24HZ</item>
+        <item >HDMI 1080P 50HZ</item>
+        <item >HDMI 1080P 60HZ </item>
+    </string-array>
+    
+     <string-array name="accelerometer_entries">
+        <item >Стандартная система координат</item>
+        <item >Специальная система координат, для поддержки некоторых игр.</item>
+    </string-array>
+    
+    <string-array name="accelerometer_summaries">
+        <item >Акселлерометр использует стандартную систему координат.</item>
+        <item >Акселлерометр использует специальную систему координат, для некоторых игр.</item>
+    </string-array>
+    
+    <string-array name="display_mode_list_entries">
+    <!--<item>Полностью</item> -->
+        <item>По Центру</item>
+    </string-array>
+
+</resources>
