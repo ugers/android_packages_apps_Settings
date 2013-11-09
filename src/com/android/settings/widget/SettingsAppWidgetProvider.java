@@ -44,6 +44,8 @@ import com.android.settings.R;
 import com.android.settings.bluetooth.LocalBluetoothAdapter;
 import com.android.settings.bluetooth.LocalBluetoothManager;
 
+import android.view.View;
+
 /**
  * Provides control of power-related settings from a widget.
  */
@@ -654,6 +656,23 @@ public class SettingsAppWidgetProvider extends AppWidgetProvider {
     static RemoteViews buildUpdate(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(),
                 R.layout.widget);
+                
+                
+                
+		//update the view when some feature is disable
+		if(!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH))
+		{
+			views.setViewVisibility(R.id.btn_bluetooth, View.GONE);
+		}
+		if(!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI))
+		{
+			views.setViewVisibility(R.id.btn_wifi, View.GONE);
+		}
+		if(!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS))
+		{
+			views.setViewVisibility(R.id.btn_gps, View.GONE);
+		}
+		
         views.setOnClickPendingIntent(R.id.btn_wifi, getLaunchPendingIntent(context,
                 BUTTON_WIFI));
         views.setOnClickPendingIntent(R.id.btn_brightness,
