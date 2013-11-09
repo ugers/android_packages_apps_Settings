@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="smart_brightness_title">Умная подсветка</string>
+    <string name="smart_brightness_summary">Автоматическая настройка подсветки.</string>
+    <string name="smart_brightness_preview">Режим предпросмотра</string>
+    <string name="hdmi_output_mode">Режим вывода HDMI</string>
+    <string name="hdmi_output_mode_summary">Установить режим вывода по умолчанию HDMI</string>
+    
+    <!-- Media scanner -->
+    <string name="media_scan_category">Сканер медиа</string>
+    <string name="media_scan_title">Включить сканирование медиа на  %1$s</string>
+    <string name="usb_storage_usage">USB большой накопитель</string>
+    
+    <!-- ++++++++++++++++++++++++++++++++++++++++++ -->
+    <!--           new strings for crane            -->
+    <string name="tscalibration_title">Калибровка сенсорного экрана</string>
+      
+    <!-- Screen Adaption -->
+    <string name="screen_adaption_title">Включить адаптацию экрана</string>
+    <string name="screen_adaption_summary">Используется для регулировки размера экрана в некоторых  играх.</string>
+    <string name="screen_adaption_summary_off">Текущее разрешение:</string>
+    <string name="screen_adaption_summary_on">Работает после перезагрузки</string>
+    <string name="display_mode_selector_title">Режим дисплея</string>
+    <string name="screen_adaption_setting">Адаптация экрана</string>
+    
+    <string name="google_market_is_not_found">Приложение Google Play не найдено.</string>
+    <string name="default_tts_speech_is_not_found">Пожалуйста, выберите по умолчанию TTS Speech Engine и выберите язык по умолчанию.</string>
+     
+      
+    <!-- system update  -->
+    <string name="system_update_section_title" msgid="7815209034443782061">"Обновление системы"</string>
+    <string name="system_recovery_title" msgid="7815209034443782061">"Режим Рекавери"</string>
+    <string name="system_recovery_summary" msgid="7815209034443782061">" Перезагрузить систему в режим Рекавери.Можно очистить данные или обновить систему"</string>
+    <string name="system_recovery_dialog_massage" msgid="7815209034443782061">"Перезагружаемся в системный режим Рекавери, вы можете выбрать удалить данные или обновить систему?"</string>
+
+	<string name="accelerometer_coordinate_title">Система координат акселерометра</string>
+
+
+	<!-- Begin ethernet configure add by shugeLinux@gmail.com @@@@@ -->
+	<string name="eth_settings_title">Ethernet</string>
+	<string name="eth_toggle_title">Использовать Ethernet</string>
+	<string name="eth_settings">Ethernet Настройки</string>
+	<string name="eth_devices">Ethernet Устройства</string>
+	<string name="eth_conf">Ethernet Параметры</string>
+	<string name="eth_ip_address">IP Адрес</string>
+	<string name="eth_ip_string">0.0.0.0</string>
+	<string name="eth_mac_address">MAC Адрес</string>
+	<string name="eth_mac_string">00:00:00:00:00:00</string>
+	<string name="eth_advanced_configure">Расширенные параметры</string>
+	<string name="eth_mask_address">Маска подсети</string>
+	<string name="eth_dns_address">DNS-сервер</string>
+	<string name="eth_gw_address">GateWay</string>
+	<string name="eth_dhcp_choice">DHCP</string>
+	<string name="eth_dev_more">Нет устройства</string>
+	<string name="eth_dev_summaryoff">ОТКЛЮЧЕНО</string>
+	<string name="eth_dev_summaryon">ПОДКЛЮЧЕНО-- ИСПОЬЗУЕТСЯ: </string>
+	
+	<string name="eth_link_status">Состояние связи</string>
+	<string name="eth_link_mode">Режим канала передачи</string>
+	<string name="eth_ip_mode">IP Режим: </string>
+	<string name="eth_dhcp_mode">DHCP</string>
+	<string name="eth_manual_mode">ВРУЧНУЮ</string>
+	<string name="eth_ok">Ok</string>
+	<string name="eth_cancel">Отмена</string>
+	<string name="eth_advand">Расшир</string>
+	<string name="eth_message">Применить к этому устройству?</string>
+	<!-- End ethernet configure add by shugeLinux@gmail.com @@@@@ -->
+
+
+
+       
+</resources>
