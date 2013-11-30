@@ -43,7 +43,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.android.settings.cyanogenmod.AutoBrightnessCustomizeDialog;
+//import com.android.settings.cyanogenmod.AutoBrightnessCustomizeDialog;
 
 public class BrightnessPreference extends SeekBarDialogPreference implements
         SeekBar.OnSeekBarChangeListener, CheckBox.OnCheckedChangeListener {
@@ -69,7 +69,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
 
     private boolean mRestoredOldState;
 
-    private AutoBrightnessCustomizeDialog mCustomizeDialog;
+    //private AutoBrightnessCustomizeDialog mCustomizeDialog;
 
     private static final int SEEK_BAR_RANGE = 10000;
 
@@ -354,7 +354,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         Settings.System.putInt(getContext().getContentResolver(),
                 Settings.System.SCREEN_BRIGHTNESS_MODE, mode);
     }
-
+/*
     private void showCustomizeDialog(Bundle state) {
         if (mCustomizeDialog != null && mCustomizeDialog.isShowing()) {
             return;
@@ -374,7 +374,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
             mCustomizeDialog.dismiss();
         }
     }
-
+*/
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
