@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:settings="http://schemas.android.com/apk/res/com.android.settings"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,4 +35,4 @@
             settings:markerSize="@dimen/auto_brightness_preview_marker_size"
             settings:margin="@dimen/auto_brightness_preview_grid_margin" />
 
-</LinearLayout>
+</LinearLayout-->
