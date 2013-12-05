@@ -1190,7 +1190,8 @@ public class InstalledAppDetails extends Fragment
                     .setNegativeButton(R.string.dlg_cancel,
                         new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
+                            // Re-enable the checkbox
+                            getOwner().mNotificationSwitch.setChecked(true);
                         }
                     })
                     .create();
