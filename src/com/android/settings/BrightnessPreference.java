@@ -16,11 +16,11 @@
 
 package com.android.settings;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+//import android.app.AlertDialog;
+//import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
+//import android.content.DialogInterface;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,13 +35,13 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+//import android.widget.ArrayAdapter;
+//import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
+//import android.widget.Spinner;
+//import android.widget.TextView;
 
 //import com.android.settings.cyanogenmod.AutoBrightnessCustomizeDialog;
 
@@ -103,7 +103,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
     }
 
     @Override
-    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
+/*    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         if (mAutomaticAvailable) {
             builder.setNeutralButton(R.string.auto_brightness_adjust_button,
                     new DialogInterface.OnClickListener() {
@@ -114,7 +114,7 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         }
     }
 
-    @Override
+    @Override*/
     protected void showDialog(Bundle state) {
         super.showDialog(state);
 /*
@@ -430,9 +430,9 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
         int progress;
         int oldProgress;
         int curBrightness;
-        int autoSensitivitySelection;
+        /*int autoSensitivitySelection;
         boolean customizeDialogShown;
-        Bundle customizeDialogState;
+        Bundle customizeDialogState;*/
 
         public SavedState(Parcel source) {
             super(source);
@@ -441,9 +441,9 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
             oldAutomatic = source.readInt() == 1;
             oldProgress = source.readInt();
             curBrightness = source.readInt();
-            autoSensitivitySelection = source.readInt();
+            /*autoSensitivitySelection = source.readInt();
             customizeDialogShown = source.readInt() == 1;
-            customizeDialogState = source.readBundle();
+            customizeDialogState = source.readBundle();*/
         }
 
         @Override
@@ -454,9 +454,9 @@ public class BrightnessPreference extends SeekBarDialogPreference implements
             dest.writeInt(oldAutomatic ? 1 : 0);
             dest.writeInt(oldProgress);
             dest.writeInt(curBrightness);
-            dest.writeInt(autoSensitivitySelection);
+           /* dest.writeInt(autoSensitivitySelection);
             dest.writeInt(customizeDialogShown ? 1 : 0);
-            dest.writeBundle(customizeDialogState);
+            dest.writeBundle(customizeDialogState);*/
         }
 
         public SavedState(Parcelable superState) {
