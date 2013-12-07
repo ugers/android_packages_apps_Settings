@@ -29,9 +29,9 @@
       
     <!-- system update  -->
     <string name="system_update_section_title" msgid="7815209034443782061">"Обновление системы"</string>
-    <string name="system_recovery_title" msgid="7815209034443782061">"Режим Рекавери"</string>
-    <string name="system_recovery_summary" msgid="7815209034443782061">" Перезагрузить систему в режим Рекавери.Можно очистить данные или обновить систему"</string>
-    <string name="system_recovery_dialog_massage" msgid="7815209034443782061">"Перезагружаемся в системный режим Рекавери, вы должны выбрать удалить данные или обновить систему?"</string>
+    <string name="system_recovery_title" msgid="7815209034443782061">"Режим Recovery"</string>
+    <string name="system_recovery_summary" msgid="7815209034443782061">" Перезагрузить систему в режим Recovery. Можно очистить данные или обновить систему"</string>
+    <string name="system_recovery_dialog_massage" msgid="7815209034443782061">"Перезагружаемся в режим Recovery, вы уверенны что хотите удалить данные или обновить систему?"</string>
 
 	<string name="accelerometer_coordinate_title">Система координат акселерометра</string>
 
