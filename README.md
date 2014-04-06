@@ -1,0 +1,1 @@
+Settings with Allwinner additions
