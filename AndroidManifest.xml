@@ -509,6 +509,26 @@
                 android:value="com.android.settings.Settings$WirelessSettingsActivity" />
         </activity>
 
+        <activity android:name="Settings$EthernetSettingsActivity"
+                android:label="@string/eth_settings_title"
+				android:taskAffinity=""
+				android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.settings.ETHERNET_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.VOICE_LAUNCH" />
+                <category android:name="com.android.settings.SHORTCUT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                android:value="com.android.settings.ethernet.EthernetSettings" />
+            <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
+                android:resource="@id/wireless_settings" />
+            <meta-data android:name="com.android.settings.PARENT_FRAGMENT_TITLE"
+                android:resource="@string/wireless_networks_settings_title" />
+            <meta-data android:name="com.android.settings.PARENT_FRAGMENT_CLASS"
+                android:value="com.android.settings.Settings$WirelessSettingsActivity" />
+        </activity>
 
         <activity android:name="Settings$VpnSettingsActivity"
                 android:label="@string/vpn_settings_title"
@@ -1564,6 +1584,13 @@
 
 
         <!-- Development settings -->
+
+        <activity android:name="DebugIntentSender" android:label="@string/debug_intent_sender_label">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEVELOPMENT_PREFERENCE" />
+            </intent-filter>
+        </activity>
 
         <!-- DeviceInfo adds the user's requested build to stats upload.  -->
         <receiver android:name=".DeviceInfo$StatsReportReceiver">

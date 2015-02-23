@@ -376,13 +376,52 @@ public class StorageMeasurement {
             }
         }
 
+        private void measureFolderSize(IMediaContainerService imcs, String path){
+            try{
+                mTotalSize = mAvailSize = 0;
+                final long[] stats = imcs.getFileSystemStats(path);
+                boolean isMulti = false;
+                File pathFile = new File(path);
+                File[] lists = pathFile.listFiles();
+                if (lists != null) {
+                    for (File f : lists) {
+                        if (f.isDirectory()) {
+                            final long[] ss = imcs.getFileSystemStats(f.getPath());
+                            if (stats[0] != ss[0] || stats[1] != ss[1])
+                                isMulti = true;
+                            mTotalSize += ss[0];
+                            mAvailSize += ss[1];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (!isMulti) {
+                    mTotalSize = stats[0];
+                    mAvailSize = stats[1];
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Problem in measureFolderSize", e);
+            }
+        }
+
         private void measureApproximateStorage(IMediaContainerService imcs) {
             final String path = mVolume != null ? mVolume.getPath()
                     : Environment.getDataDirectory().getPath();
             try {
-                final long[] stats = imcs.getFileSystemStats(path);
-                mTotalSize = stats[0];
-                mAvailSize = stats[1];
+                if (path.contains("usb")){
+                    String newPath = null;
+                    if ("emulated".equals(android.os.SystemProperties.get("ro.sys.storage_type", null))) {
+                        newPath = path.replace("storage", "mnt");
+                    } else {
+                        newPath = path;
+                    }
+                    measureFolderSize(imcs, newPath);
+                } else {
+                    final long[] stats = imcs.getFileSystemStats(path);
+                    mTotalSize = stats[0];
+                    mAvailSize = stats[1];
+                }
             } catch (Exception e) {
                 Log.w(TAG, "Problem in container service", e);
             }
