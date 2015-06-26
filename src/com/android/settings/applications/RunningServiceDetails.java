@@ -97,7 +97,11 @@ public class RunningServiceDetails extends Fragment
                     return;
                 }
             }
-            getActivity().stopService(new Intent().setComponent(si.mRunningService.service));
+            try {
+                getActivity().stopService(new Intent().setComponent(si.mRunningService.service));
+            } catch (SecurityException e) {
+                Log.e(TAG, "Can't stop service with new account!" );
+            }
             if (mMergedItem == null) {
                 // If this is gone, we are gone.
                 mState.updateNow();

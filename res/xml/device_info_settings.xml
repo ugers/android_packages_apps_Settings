@@ -129,13 +129,7 @@
                 style="?android:preferenceInformationStyle"
                 android:title="@string/model_number"
                 android:summary="@string/device_info_default"/>
-
-        <!-- CPU type -->
-        <Preference android:key="cpu_type"
-                style="?android:preferenceInformationStyle"
-                android:title="@string/cpu_type"
-                android:summary="@string/device_info_default"/>
-		                
+                
         <!-- Mod version -->
         <Preference android:key="mod_version"
                 style="?android:preferenceInformationStyle"

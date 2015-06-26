@@ -16,6 +16,7 @@
 
 package com.android.settings.deviceinfo;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -81,6 +82,8 @@ public class Memory extends SettingsPreferenceFragment {
     private UsbManager mUsbManager;
 
     private ArrayList<StorageVolumePreferenceCategory> mCategories = Lists.newArrayList();
+	
+	private String unmoutUSBorSD = "";
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -177,9 +180,11 @@ public class Memory extends SettingsPreferenceFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         final MenuItem usb = menu.findItem(R.id.storage_usb);
-        UserManager um = (UserManager)getActivity().getSystemService(Context.USER_SERVICE);
-        boolean usbItemVisible = !um.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER);
-        usb.setVisible(usbItemVisible);
+        /*UserManager um = (UserManager)getActivity().getSystemService(Context.USER_SERVICE);
+        boolean usbItemVisible = !isMassStorageEnabled()
+                && !um.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER);
+        usb.setVisible(usbItemVisible);*/
+        usb.setVisible(true);
     }
 
     @Override
@@ -239,6 +244,11 @@ public class Memory extends SettingsPreferenceFragment {
                 mLastClickedMountToggle = preference;
                 mClickedMountPoint = volume.getPath();
                 String state = mStorageManager.getVolumeState(volume.getPath());
+				if (volume.getPath().contains("usb")){
+					unmoutUSBorSD = "usb";
+				}else{
+					unmoutUSBorSD = "sd";
+				}
                 if (Environment.MEDIA_MOUNTED.equals(state) ||
                         Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
                     unmount();
@@ -428,6 +438,11 @@ public class Memory extends SettingsPreferenceFragment {
                     final ClearCacheObserver observer = new ClearCacheObserver(
                             target, infos.size());
                     for (PackageInfo info : infos) {
+                        if (info.packageName.contains("gallery")) {
+                            ActivityManager am = (ActivityManager)getActivity().getSystemService(
+                                    Context.ACTIVITY_SERVICE);
+                            am.forceStopPackage(info.packageName);
+                        }
                         pm.deleteApplicationCacheFiles(info.packageName, observer);
                     }
                 }

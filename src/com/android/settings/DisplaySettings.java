@@ -23,14 +23,20 @@ import static android.provider.Settings.System.SCREEN_ANIMATION_STYLE;
 import android.app.ActivityManagerNative;
 import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.WifiDisplay;
+import android.hardware.display.WifiDisplayStatus;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -43,8 +49,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
+import android.util.AttributeSet;
 import android.util.Log;
-
+//import com.android.settings.MiracastControlPreference;
 import android.view.WindowManagerGlobal;
 import com.android.internal.view.RotationPolicy;
 import com.android.settings.DreamSettings;
@@ -93,6 +101,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
+    private static final String KEY_ACCELEROMETER_COORDINATE = "accelerometer_coornadite";
     private static final String KEY_EXPANDED_DESKTOP = "expanded_desktop";
     private static final String KEY_EXPANDED_DESKTOP_NO_NAVBAR = "expanded_desktop_no_navbar";
     private static final String CATEGORY_EXPANDED_DESKTOP = "expanded_desktop_category";
@@ -101,6 +110,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private CheckBoxPreference mExpandedDesktopNoNavbarPref;
 
     private CheckBoxPreference mAccelerometer;
+    private ListPreference mAccelerometerCoordinate;
     private FontDialogPreference mFontSizePref;
     private CheckBoxPreference mWakeWhenPluggedOrUnplugged;
     private CheckBoxPreference mScreenOffAnimation;
@@ -222,6 +232,15 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             mColorEnhancement = null;
         }
 
+	mAccelerometerCoordinate = (ListPreference) findPreference(KEY_ACCELEROMETER_COORDINATE);
+        if(mAccelerometerCoordinate != null){
+                mAccelerometerCoordinate.setOnPreferenceChangeListener(this);
+                String value = Settings.System.getString(getContentResolver(),
+                         Settings.System.ACCELEROMETER_COORDINATE);
+                mAccelerometerCoordinate.setValue(value);
+                updateAccelerometerCoordinateSummary(value);
+         }
+		 
         mTapToWake = (CheckBoxPreference) findPreference(KEY_TAP_TO_WAKE);
         if (!isTapToWakeSupported()) {
             advancedPrefs.removePreference(mTapToWake);
@@ -377,8 +396,12 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
                     if (currentTimeout >= timeout) {
                         best = i;
                     }
-                }
-                summary = preference.getContext().getString(R.string.screen_timeout_summary,
+               }
+	       /* the last item is for never_sleep mode, yemao, 2013-10-15 21:05:53 */
+               if (best == values.length - 1)
+                   summary = preference.getContext().getString(R.string.never_sleep);
+               else
+                   summary = preference.getContext().getString(R.string.screen_timeout_summary,
                         entries[best]);
             }
         }
@@ -521,6 +544,9 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         updateScreenSaverSummary();
         updateLightPulseSummary();
         updateBatteryPulseSummary();
+	if (mAccelerometerCoordinate != null) {
+              updateAccelerometerCoordinateSummary(mAccelerometerCoordinate.getValue());
+         }
     }
 
     private void updateScreenSaverSummary() {
@@ -541,6 +567,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
     }
 
+    private void updateAccelerometerCoordinateSummary(Object value){
+        CharSequence[] summaries = getResources().getTextArray(R.array.accelerometer_summaries);
+        CharSequence[] values = mAccelerometerCoordinate.getEntryValues();
+        for (int i=0; i<values.length; i++) {
+            if (values[i].equals(value)) {
+                mAccelerometerCoordinate.setSummary(summaries[i]);
+                break;
+            }
+        }
+    }
+	
     private void updateBatteryPulseSummary() {
         if (mBatteryPulse != null) {
             if (Settings.System.getInt(getActivity().getContentResolver(),
@@ -623,6 +660,16 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
         if (KEY_FONT_SIZE.equals(key)) {
             writeFontSizePreference(objValue);
+        }
+        if (KEY_ACCELEROMETER_COORDINATE.equals(key)) {
+            String value = String.valueOf(objValue);
+            try {
+                Settings.System.putString(getContentResolver(),
+                        Settings.System.ACCELEROMETER_COORDINATE, value);
+                updateAccelerometerCoordinateSummary(objValue);
+            }catch (NumberFormatException e) {
+                Log.e(TAG, "could not persist key accelerometer coordinate setting", e);
+            }
         }
         if (KEY_SCREEN_ANIMATION_STYLE.equals(key)) {
             int value = Integer.parseInt((String) objValue);

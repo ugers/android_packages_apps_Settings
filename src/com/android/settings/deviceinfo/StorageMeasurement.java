@@ -69,6 +69,9 @@ public class StorageMeasurement {
     public static final ComponentName DEFAULT_CONTAINER_COMPONENT = new ComponentName(
             DEFAULT_CONTAINER_PACKAGE, "com.android.defcontainer.DefaultContainerService");
 
+    private long usbTotalSize;
+    private long usbAvailSize;
+
     /** Media types to measure on external storage. */
     private static final Set<String> sMeasureMediaTypes = Sets.newHashSet(
             Environment.DIRECTORY_DCIM, Environment.DIRECTORY_MOVIES,

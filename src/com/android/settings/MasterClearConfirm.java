@@ -29,6 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import java.io.IOException;
+import android.content.Context;
+import android.os.RecoverySystem;
 
 /**
  * Confirm and execute a reset of the device to a clean "just out of the box"
@@ -43,9 +46,9 @@ import android.widget.CheckBox;
 public class MasterClearConfirm extends Fragment {
 
     private View mContentView;
-    private boolean mWipeMedia;
     private boolean mEraseSdCard;
     private Button mFinalButton;
+    private Context context;
 
     /**
      * The user has gone through the multiple confirmation, so now we go ahead
@@ -64,10 +67,20 @@ public class MasterClearConfirm extends Fragment {
                 intent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);
                 getActivity().startService(intent);
             } else {
-                Intent intent = new Intent("android.intent.action.MASTER_CLEAR");
-                intent.putExtra("wipe_media", mWipeMedia);
-                getActivity().sendBroadcast(intent);
+                //getActivity().sendBroadcast(new Intent("android.intent.action.MASTER_CLEAR"));
                 // Intent handling is asynchronous -- assume it will happen soon.
+                // The reboot call is blocking, so we need to do it on another thread.
+                Thread thr = new Thread("Reboot") {
+                    @Override
+                    public void run() {
+                        try {
+                            RecoverySystem.rebootWipeUserData(context);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                thr.start();
             }
         }
     };
@@ -92,8 +105,8 @@ public class MasterClearConfirm extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = (Context)this.getActivity();
         Bundle args = getArguments();
-        mWipeMedia = args != null ? args.getBoolean(MasterClear.WIPE_MEDIA_EXTRA) : false;
         mEraseSdCard = args != null ? args.getBoolean(MasterClear.ERASE_EXTERNAL_EXTRA) : false;
     }
 }

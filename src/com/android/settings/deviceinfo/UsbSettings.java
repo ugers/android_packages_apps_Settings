@@ -23,11 +23,11 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.UserManager;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.util.Log;
 
 import com.android.settings.R;
@@ -72,6 +72,9 @@ public class UsbSettings extends SettingsPreferenceFragment {
         addPreferencesFromResource(R.xml.usb_settings);
         root = getPreferenceScreen();
 
+        final StorageManager storageManager = StorageManager.from(root.getContext());
+        final StorageVolume primary = storageManager.getPrimaryVolume();
+        boolean massStorageSupported = primary != null && primary.allowMassStorage();
         mMtp = (CheckBoxPreference)root.findPreference(KEY_MTP);
         mPtp = (CheckBoxPreference)root.findPreference(KEY_PTP);
         mUms = (CheckBoxPreference)root.findPreference(KEY_MASS_STORAGE);

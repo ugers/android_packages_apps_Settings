@@ -69,9 +69,11 @@ public class DeviceInfoSettings extends RestrictedSettingsFragment {
     private static final String KEY_SELINUX_STATUS = "selinux_status";
     private static final String KEY_BASEBAND_VERSION = "baseband_version";
     private static final String KEY_FIRMWARE_VERSION = "firmware_version";
+    private static final String KEY_SOFTWARE_VERSION = "software_version";
     private static final String KEY_UPDATE_SETTING = "additional_system_update_settings";
     private static final String KEY_EQUIPMENT_ID = "fcc_equipment_id";
     private static final String PROPERTY_EQUIPMENT_ID = "ro.ril.fccid";
+    private static final String PROPETY_BASEBAND = "ro.sw.embeded.telephony";
     private static final String KEY_MOD_VERSION = "mod_version";
     private static final String KEY_MOD_BUILD_DATE = "build_date";
     private static final String KEY_DEVICE_CPU = "device_cpu";
@@ -100,7 +102,12 @@ public class DeviceInfoSettings extends RestrictedSettingsFragment {
 
         setStringSummary(KEY_FIRMWARE_VERSION, Build.VERSION.RELEASE);
         findPreference(KEY_FIRMWARE_VERSION).setEnabled(true);
+        setStringSummary(KEY_SOFTWARE_VERSION,Build.FIRMWARE);
+
         setValueSummary(KEY_BASEBAND_VERSION, "gsm.version.baseband");
+        if(!SystemProperties.getBoolean(PROPETY_BASEBAND,false)){
+            removePreference(KEY_BASEBAND_VERSION);
+        }
         setStringSummary(KEY_DEVICE_MODEL, Build.MODEL + getMsvSuffix());
         setValueSummary(KEY_EQUIPMENT_ID, PROPERTY_EQUIPMENT_ID);
         setStringSummary(KEY_DEVICE_MODEL, Build.MODEL);
