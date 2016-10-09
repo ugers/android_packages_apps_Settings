@@ -25,6 +25,9 @@ import com.android.internal.logging.MetricsLogger;
 public abstract class InstrumentedFragment extends PreferenceFragment {
     // Declare new temporary categories here, starting after this value.
     public static final int UNDECLARED = 100000;
+    public static final int REBOOT_RECOVERY = UNDECLARED + 1;
+    public static final int REBOOT_RECOVERY_CONFIRM = UNDECLARED + 2;
+    public static final int BACKGROUND_CLEANUP = UNDECLARED + 3;
 
     /**
      * Declare the view of this category.

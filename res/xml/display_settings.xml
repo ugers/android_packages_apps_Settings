@@ -57,6 +57,18 @@
                 android:entries="@array/screen_timeout_entries"
                 android:entryValues="@array/screen_timeout_values" />
 
+        <SwitchPreference
+                android:key="camera_gesture"
+                android:title="@string/camera_gesture_title"
+                android:summary="@string/camera_gesture_desc"
+                android:persistent="false" />
+
+        <SwitchPreference
+                android:key="camera_double_tap_power_gesture"
+                android:title="@string/camera_double_tap_power_gesture_title"
+                android:summary="@string/camera_double_tap_power_gesture_desc"
+                android:persistent="false" />
+
         <PreferenceScreen
                 android:key="screensaver"
                 android:title="@string/screensaver_settings_title"
@@ -97,5 +109,55 @@
                 android:title="@string/wifi_display_settings_title"
                 settings:keywords="@string/keywords_display_cast_screen"
                 android:fragment="com.android.settings.wfd.WifiDisplaySettings" />
+
+		<PreferenceCategory
+		        android:title="@string/hdmi_setting"
+		        android:key="hdmi_output_mode_cate">
+		        <CheckBoxPreference
+		            android:key="hdmi_full_screen"
+		            android:summary="@string/hdmi_full_screen_summary"
+		            android:title="@string/hdmi_full_screen" />
+		        <ListPreference
+		            android:key="hdmi_output_mode_720p"
+		            android:title="@string/hdmi_output_mode"
+		            android:summary="@string/hdmi_output_mode_summary"
+		            android:persistent="false"
+		            android:entries="@array/hdmi_output_mode_720p_entries"
+		            android:entryValues="@array/hdmi_output_mode_720p_values" />
+		        <ListPreference
+		            android:key="hdmi_output_mode"
+		            android:title="@string/hdmi_output_mode"
+		            android:summary="@string/hdmi_output_mode_summary"
+		            android:persistent="false"
+		            android:entries="@array/hdmi_output_mode_entries"
+		            android:entryValues="@array/hdmi_output_mode_values" />
+				<com.android.settings.ScrapEdgePreference
+		                android:title="@string/screen_scrap_edge"
+						android:summary="@string/screen_scrap_edge_summary"
+		                android:persistent="false"/>
+
+    	</PreferenceCategory>
+
+    	<PreferenceCategory android:title="@string/bright_system" />
+
+	    <CheckBoxPreference
+				android:key="bright_system"
+				android:summary="@string/bright_system_summary"
+				android:title="@string/bright_system" />
+	    <CheckBoxPreference
+				android:key="bright_demo_mode"
+				android:summary="@string/demo_mode_summary"
+				android:title="@string/demo_mode" />
+	
+	    <PreferenceCategory android:title="@string/brightness_light" />
+	
+	    <CheckBoxPreference
+				android:key="brightness_light"
+				android:persistent="false"
+				android:title="@string/brightness_light" />
+	    <CheckBoxPreference
+				android:key="backlight_demo_mode"
+				android:summary="@string/demo_mode_summary"
+				android:title="@string/demo_mode" />
 
 </PreferenceScreen>

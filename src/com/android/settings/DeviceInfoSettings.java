@@ -17,8 +17,10 @@
 package com.android.settings;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -36,12 +38,14 @@ import android.preference.PreferenceScreen;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.telephony.CarrierConfigManager;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.android.internal.logging.MetricsLogger;
+import com.android.internal.telephony.TelephonyIntents;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Index;
 import com.android.settings.search.Indexable;
@@ -65,6 +69,7 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
     private static final String FILENAME_PROC_VERSION = "/proc/version";
     private static final String FILENAME_MSV = "/sys/board_properties/soc/msv";
 
+    private static final String KEY_MANUAL = "manual";
     private static final String KEY_REGULATORY_INFO = "regulatory_info";
     private static final String KEY_SYSTEM_UPDATE_SETTINGS = "system_update_settings";
     private static final String PROPERTY_URL_SAFETYLEGAL = "ro.url.safetylegal";
@@ -81,6 +86,13 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
     private static final String PROPERTY_EQUIPMENT_ID = "ro.ril.fccid";
     private static final String KEY_DEVICE_FEEDBACK = "device_feedback";
     private static final String KEY_SAFETY_LEGAL = "safetylegal";
+    private static final String KEY_SOFTWARE_VERSION = "software_version";
+    private static final String KEY_CPU_TYPE = "cpu_type";
+    private static final String PROPERTY_CPUTYPE = "ro.sys.cputype";
+    private static final String PROPETY_FIRMWARE_VERSION = "ro.product.firmware";
+
+    private Preference mBasebandVersion;
+    private TelephonyManager mTelephonyManager;
 
     static final int TAPS_TO_BE_A_DEVELOPER = 7;
 
@@ -104,8 +116,12 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
 
         addPreferencesFromResource(R.xml.device_info_settings);
 
+        mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        setStringSummary(KEY_CPU_TYPE, SystemProperties.get(PROPERTY_CPUTYPE, "Unknown"));
         setStringSummary(KEY_FIRMWARE_VERSION, Build.VERSION.RELEASE);
         findPreference(KEY_FIRMWARE_VERSION).setEnabled(true);
+        setStringSummary(KEY_SOFTWARE_VERSION,SystemProperties.get(PROPETY_FIRMWARE_VERSION, "Unknown"));
         String patch = Build.VERSION.SECURITY_PATCH;
         if (!"".equals(patch)) {
             try {
@@ -150,8 +166,10 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 PROPERTY_EQUIPMENT_ID);
 
         // Remove Baseband version if wifi-only device
-        if (Utils.isWifiOnly(getActivity())) {
-            getPreferenceScreen().removePreference(findPreference(KEY_BASEBAND_VERSION));
+        mBasebandVersion = findPreference(KEY_BASEBAND_VERSION);
+        if (Utils.isWifiOnly(getActivity()) 
+            || SystemProperties.get("ro.sw.embeded.telephony", "false").equals("false")) {
+            getPreferenceScreen().removePreference(mBasebandVersion);
         }
 
         // Dont show feedback option if there is no reporter.
@@ -180,6 +198,9 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
         removePreferenceIfBoolFalse(KEY_UPDATE_SETTING,
                 R.bool.config_additional_system_update_setting_enable);
 
+        // Remove manual entry if none present.
+        removePreferenceIfBoolFalse(KEY_MANUAL, R.bool.config_show_manual);
+
         // Remove regulatory information if none present.
         final Intent intent = new Intent(Settings.ACTION_SHOW_REGULATORY_INFO);
         if (getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
@@ -197,6 +218,13 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 Context.MODE_PRIVATE).getBoolean(DevelopmentSettings.PREF_SHOW,
                         android.os.Build.TYPE.equals("eng")) ? -1 : TAPS_TO_BE_A_DEVELOPER;
         mDevHitToast = null;
+        getActivity().registerReceiver(mSimStateReceiver, new IntentFilter(TelephonyIntents.ACTION_SIM_STATE_CHANGED));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mSimStateReceiver);
     }
 
     @Override
@@ -509,5 +537,23 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
             }
         };
 
+    private BroadcastReceiver mSimStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+           if(SystemProperties.get("ro.sw.embeded.telephony", "false").equals("false")){
+                if (TelephonyIntents.ACTION_SIM_STATE_CHANGED.equals(action)) {
+                    int iSimState = mTelephonyManager.getSimState();
+                    if ((iSimState == TelephonyManager.SIM_STATE_UNKNOWN)
+                        || (iSimState == TelephonyManager.SIM_STATE_NOT_READY)) {
+                        getPreferenceScreen().removePreference(mBasebandVersion);
+                    } else {
+                        getPreferenceScreen().addPreference(mBasebandVersion);
+
+                    }
+                }
+            }
+        }
+    };
 }
 

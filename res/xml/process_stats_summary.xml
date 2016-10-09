@@ -57,4 +57,9 @@
         android:key="apps_list"
         android:title="@string/memory_usage_apps" />
 
+    <PreferenceScreen
+        android:key="background_cleanup_list"
+        android:title="@string/background_cleanup_list"
+        android:fragment="com.android.settings.applications.BackgroundCleanup" />
+
 </PreferenceScreen>

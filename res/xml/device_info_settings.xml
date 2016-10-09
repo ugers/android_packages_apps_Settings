@@ -41,6 +41,13 @@
                     android:targetClass="com.android.settings.deviceinfo.Status" />
         </PreferenceScreen>
 
+        <!-- Manual -->
+        <PreferenceScreen
+                android:key="manual"
+                android:title="@string/manual">
+            <intent android:action="android.settings.SHOW_MANUAL" />
+        </PreferenceScreen>
+
         <!-- Legal Information -->
         <PreferenceScreen
                 android:key="container"
@@ -64,6 +71,12 @@
                 android:title="@string/model_number"
                 android:summary="@string/device_info_default"/>
 
+        <!-- CPU type -->
+        <Preference android:key="cpu_type"
+                style="?android:preferenceInformationStyle"
+                android:title="@string/cpu_type"
+                android:summary="@string/device_info_default"/>
+
         <!-- Device firmware version -->
         <Preference android:key="firmware_version"
                 style="?android:preferenceInformationStyle"
@@ -80,6 +93,12 @@
         <Preference android:key="fcc_equipment_id"
                 style="?android:preferenceInformationStyle"
                 android:title="@string/fcc_equipment_id"
+                android:summary="@string/device_info_default"/>
+
+        <!-- Device software version -->
+        <Preference android:key="software_version"
+                style="?android:preferenceInformationStyle"
+                android:title="@string/software_version"
                 android:summary="@string/device_info_default"/>
 
         <!-- Device Baseband version -->

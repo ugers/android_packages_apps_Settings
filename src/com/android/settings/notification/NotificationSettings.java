@@ -34,6 +34,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -60,10 +61,14 @@ import com.android.settings.Utils;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import android.os.SystemProperties;
 
 public class NotificationSettings extends SettingsPreferenceFragment implements Indexable {
     private static final String TAG = "NotificationSettings";
@@ -83,6 +88,9 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
     private static final String KEY_NOTIFICATION_ACCESS = "manage_notification_access";
     private static final String KEY_ZEN_ACCESS = "manage_zen_access";
     private static final String KEY_ZEN_MODE = "zen_mode";
+    private static final String KEY_BOOT_MUSIC = "boot_music";
+
+    private static final String KEY_AUDIO_3D_SURROUND = "audio_3d_surround";
 
     private static final String[] RESTRICTED_KEYS = {
         KEY_MEDIA_VOLUME,
@@ -112,6 +120,8 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
     private Preference mNotificationRingtonePreference;
     private TwoStatePreference mVibrateWhenRinging;
     private TwoStatePreference mNotificationPulse;
+    private TwoStatePreference mBootMusic;
+    private TwoStatePreference mAudio3dSurround;
     private DropDownPreference mLockscreen;
     private Preference mNotificationAccess;
     private Preference mZenAccess;
@@ -162,6 +172,8 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
         }
         initRingtones(sound);
         initVibrateWhenRinging(sound);
+        initUpdateBootMusic(sound);
+        initUpdateAudio3dSurround(sound);
 
         final PreferenceCategory notification = (PreferenceCategory)
                 findPreference(KEY_NOTIFICATION);
@@ -403,6 +415,62 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
                 Settings.System.VIBRATE_WHEN_RINGING, 0) != 0);
     }
 
+    private void initUpdateBootMusic(PreferenceCategory root) {
+        mBootMusic = (TwoStatePreference) root.findPreference(KEY_BOOT_MUSIC);
+        if (mBootMusic == null) {
+            Log.i(TAG, "Preference not found: " + KEY_BOOT_MUSIC);
+            return;
+        }
+        mBootMusic.setPersistent(false);
+        final File musicFile = new File("/cache/nobootmusic");
+        mBootMusic.setChecked(!musicFile.exists());
+        //mBootMusic.setChecked(SystemProperties.getInt("persist.sys.nobootmusic", 0) == 0);
+        mBootMusic.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final boolean val = (Boolean) newValue;
+                if (val) {
+                    musicFile.delete();
+                } else {
+                    try {
+                        musicFile.createNewFile();
+                        FileUtils.setPermissions(musicFile, 0660, -1, -1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //SystemProperties.set("persist.sys.nobootmusic", val? "0" : "1");
+                return true;
+            }
+        });
+    }
+
+    // === 3D audio switch ===
+    private void initUpdateAudio3dSurround(PreferenceCategory root) {
+        mAudio3dSurround = (TwoStatePreference) root.findPreference(KEY_AUDIO_3D_SURROUND);
+        if (mAudio3dSurround == null) {
+            Log.i(TAG, "Preference not found: " + KEY_AUDIO_3D_SURROUND);
+            return;
+        }
+
+        // If there is no headset, disable the switch
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        boolean isHeadsetOn=audioManager.isWiredHeadsetOn();
+        mAudio3dSurround.setEnabled(isHeadsetOn);
+
+        mAudio3dSurround.setPersistent(false);
+        mAudio3dSurround.setChecked(SystemProperties.getInt("persist.sys.audio_3d_surround", 0) != 0);
+
+        mAudio3dSurround.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final boolean val = (Boolean) newValue;
+                SystemProperties.set("persist.sys.audio_3d_surround", val ? "1" : "0");
+                return true;
+            }
+        });
+    }
+
     // === Pulse notification light ===
 
     private void initPulse(PreferenceCategory parent) {
@@ -630,6 +698,8 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
                 final IntentFilter filter = new IntentFilter();
                 filter.addAction(NotificationManager.ACTION_EFFECTS_SUPPRESSOR_CHANGED);
                 filter.addAction(AudioManager.INTERNAL_RINGER_MODE_CHANGED_ACTION);
+                filter.addAction("android.intent.action.HEADSET_PLUG");
+                filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
                 mContext.registerReceiver(this, filter);
             } else {
                 mContext.unregisterReceiver(this);
@@ -645,6 +715,22 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
             } else if (AudioManager.INTERNAL_RINGER_MODE_CHANGED_ACTION.equals(action)) {
                 mHandler.sendEmptyMessage(H.UPDATE_RINGER_MODE);
             }
+
+            if (mAudio3dSurround != null) {
+                //Headset connected
+                if ("android.intent.action.HEADSET_PLUG".equals(action)){
+                    if (intent.hasExtra("state"))
+                        if (intent.getIntExtra("state", 0) != 0) {
+                            mAudio3dSurround.setEnabled(true);
+                        }
+                }
+
+                //Headset disconnected
+                else if(AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+                    mAudio3dSurround.setEnabled(false);
+                }
+            }
+
         }
     }
 
@@ -669,6 +755,8 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
                 rt.add(KEY_PHONE_RINGTONE);
                 rt.add(KEY_WIFI_DISPLAY);
                 rt.add(KEY_VIBRATE_WHEN_RINGING);
+                rt.add(KEY_BOOT_MUSIC);
+                rt.add(KEY_AUDIO_3D_SURROUND);
             }
             return rt;
         }

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.text.format.Formatter.BytesResult;
@@ -38,6 +39,7 @@ public class ProcessStatsSummary extends ProcessStatsBase implements OnPreferenc
     private static final String KEY_AVERAGY_USED = "average_used";
     private static final String KEY_FREE = "free";
     private static final String KEY_APP_LIST = "apps_list";
+    private static final String KEY_BACKGROUND_CLEANUP_LIST = "background_cleanup_list";
 
     private LinearColorBar mColors;
     private LayoutPreference mHeader;
@@ -64,6 +66,12 @@ public class ProcessStatsSummary extends ProcessStatsBase implements OnPreferenc
         mFree = findPreference(KEY_FREE);
         mAppListPreference = findPreference(KEY_APP_LIST);
         mAppListPreference.setOnPreferenceClickListener(this);
+
+        boolean killBackgroundServices = Settings.System.getInt(
+                    getActivity().getContentResolver(), Settings.System.KILL_BACKGROUND_SERVICES, 0) != 0;
+        if (!killBackgroundServices) {
+            removePreference(KEY_BACKGROUND_CLEANUP_LIST);
+        }
     }
 
     @Override

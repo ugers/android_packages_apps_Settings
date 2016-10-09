@@ -90,6 +90,10 @@
                 android:title="@string/wifi_display_settings_title"
                 android:fragment="com.android.settings.wfd.WifiDisplaySettings" />
 
+        <SwitchPreference
+                android:key="boot_music"
+                android:title="@string/boot_music_enable_title"
+                android:persistent="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory

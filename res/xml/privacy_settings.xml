@@ -60,4 +60,11 @@
         settings:keywords="@string/keywords_factory_data_reset"
         android:fragment="com.android.settings.MasterClear" />
 
+    <!-- Reboot recovery -->
+    <PreferenceScreen
+        android:key="reboot_recovery"
+        android:title="@string/reboot_recovery_title"
+        settings:keywords="@string/keywords_factory_data_reset"
+        android:fragment="com.android.settings.RebootRecovery" />
+
 </PreferenceScreen>

@@ -78,6 +78,18 @@
                 android:entryValues="@array/long_press_timeout_selector_values"
                 android:persistent="false"/>
 
+        <CheckBoxPreference
+                android:key="toggle_gesture_screenshot_preference"
+                android:title="@string/title_gesture_screenshot"
+                android:summary="@string/title_gesture_screenshot_summary"
+                android:persistent="false"/>
+
+        <CheckBoxPreference
+                android:key="toggle_gesture_screenrecord_preference"
+                android:title="@string/title_gesture_screenrecord"
+                android:summary="@string/title_gesture_screenrecord_summary"
+                android:persistent="false"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory
